@@ -17,6 +17,10 @@ CORS(app)
 with app.app_context():
        db.create_all()
 
+@app.route('/')
+def testapp():
+    return 'Hello, Sayed Hussein, the app is working'
+
 @app.route('/headers')
 @requires_auth('get:drinks-detail')
 def Hello(jwt):
