@@ -8,7 +8,8 @@ import json
 
 
 database_name = "coffee_shop"
-database_path = "postgresql://postgres@localhost:5432/coffee_shop"
+database_path = "postgres://{}:{}@{}/{}".format('postgres', 'root', 'localhost:5432', database_name)
+
 
 db = SQLAlchemy()
 
