@@ -1,5 +1,5 @@
 
-export DATABASE_URL="postgres://localhost:5432/coffee_shop"
+export DATABASE_URL="postgres://vruowiqqxcjikb:8436a1318322bd2916ef40192d48d6c7b13a509f6e8ffcce35b01c4bfbdc8f68@ec2-184-73-198-174.compute-1.amazonaws.com:5432/d5pjp6023975ed"
 export FLASK_APP=app.py
 export DATABASE_URL="postgresql:///coffee_shop"
 export AUTH0_DOMAIN="pos-coffee-shop.us.auth0.com"
