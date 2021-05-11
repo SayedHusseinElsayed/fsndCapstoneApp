@@ -11,6 +11,7 @@ database_name = "coffee_shop"
 database_path = "postgresql://{}:{}@{}/{}".format('postgres', 'root', 'localhost:5432', database_name)
 #database_path = os.environ['DATABASE_URL']
 
+
 db = SQLAlchemy()
 
 

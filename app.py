@@ -4,12 +4,10 @@ from flask_migrate import Migrate
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
-
 from models import db_drop_and_create_all, setup_db, Drink,Category, db
 from auth import AuthError, requires_auth
 
 app = Flask(__name__)
-
 setup_db(app)
 migrate = Migrate(app , db)
 CORS(app)
@@ -217,6 +215,6 @@ def unprocessable(error):
     error handler should conform to general task above 
 '''
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
 
 
