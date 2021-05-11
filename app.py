@@ -8,7 +8,6 @@ from flask_cors import CORS
 from models import db_drop_and_create_all, setup_db, Drink,Category, db
 from auth import AuthError, requires_auth
 
-
 app = Flask(__name__)
 
 setup_db(app)
@@ -16,6 +15,7 @@ migrate = Migrate(app , db)
 CORS(app)
 with app.app_context():
        db.create_all()
+
 
 @app.route('/')
 def testapp():
@@ -216,7 +216,7 @@ def unprocessable(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above 
 '''
-
-
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000,debug=True)
+    app.run(debug=True)
+
+
