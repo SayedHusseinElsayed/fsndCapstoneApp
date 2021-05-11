@@ -57,8 +57,6 @@ def get_token_auth_header():
     return token
 
 
-
-
 def check_permissions(permission, payload):
     if 'permissions' not in payload:
                         raise AuthError({
