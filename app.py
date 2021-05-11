@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
-from models import db_drop_and_create_all, setup_db, Drink,Category, db
+from models import *
 from auth import AuthError, requires_auth
 
 app = Flask(__name__)
