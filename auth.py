@@ -15,7 +15,6 @@ from urllib.request import urlopen
 from os.path import join, dirname
 from dotenv import load_dotenv
 
-
 AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 ALGORITHMS   = os.environ.get('ALGORITHMS')
 API_AUDIENCE = os.environ.get('API_AUDIENCE')
@@ -154,6 +153,69 @@ def requires_auth(permission=''):
 
 
 # some implmentation of errors:
+#
+
+
+def unprocessable(AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message":(AuthError.error, "authentification fails")
+                    }), 422
+
+def resourcenotfound(AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": 404,
+                    "message": "resource not found"
+                    }), 404
+
+
+def permissionNotIncluded(error):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message": (AuthError.error, "Permission is not included in the JWT")
+                    }), 400
+
+def unauthorized(AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message": (AuthError.error, "unauthorized")
+                    }), 401
+
+def invalid_method (AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message": (AuthError.error, "invalid_method")
+                    }), 405
+
+  
+def forbidden (AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message": (AuthError.error, "forbidden")
+                    }), 403
+ 
+def server_error (AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message": (AuthError.error, "server_error")
+                    }), 500
+              
+def duplicate_resource (AuthError):
+    return jsonify({
+                    "success": False, 
+                    "error": AuthError.status_code,
+                    "message": (AuthError.error, "duplicate_resource")
+                    }), 409
+
+
+                    
 header_missing = AuthError({
     'code': 'missing_authorization_header',
     'description': 'an authorization header is expected to be send in request.'
