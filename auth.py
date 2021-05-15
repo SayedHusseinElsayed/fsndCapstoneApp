@@ -1,5 +1,10 @@
 import os
-from flask import Flask, request, jsonify, abort
+
+from flask import (
+    Flask,
+     request, 
+     jsonify, 
+     abort)
 from flask_migrate import Migrate
 from sqlalchemy import exc
 import json
@@ -7,11 +12,13 @@ from flask_cors import CORS
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+from os.path import join, dirname
+from dotenv import load_dotenv
 
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+ALGORITHMS   = os.environ.get('ALGORITHMS')
+API_AUDIENCE = os.environ.get('API_AUDIENCE')
 
-AUTH0_DOMAIN = 'pos-coffee-shop.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'coffeeshop'
 
 ## AuthError Exception method
 

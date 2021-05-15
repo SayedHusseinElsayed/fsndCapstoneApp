@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\Coffee_Shop\starter_code\backend\src\env"
+VIRTUAL_ENV="D:\Full Stack from NTL\Capstone\Coffee_Shop\starter_code\backend\src\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

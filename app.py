@@ -1,34 +1,47 @@
 import os
-from flask import Flask, request, jsonify, abort
+from flask import (
+  Flask,
+  request,
+  jsonify,
+  abort
+)
 from flask_migrate import Migrate
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
 from models import *
-from auth import AuthError, requires_auth
+from auth import *
 
-app = Flask(__name__)
-setup_db(app)
-migrate = Migrate(app , db)
-CORS(app)
-with app.app_context():
+
+def create_app(test_config=None):
+ app = Flask(__name__)
+ setup_db(app)
+ migrate = Migrate(app , db)
+ CORS(app)
+ with app.app_context():
        db.create_all()
 
-
-@app.route('/')
-def testapp():
+ @app.route('/')
+ def testapp():
     return 'Hello, Sayed Hussein, the app is working'
 
-@app.route('/headers')
-@requires_auth('get:drinks-detail')
-def Hello(jwt):
+ @app.after_request
+ def after_request(response):
+        response.headers.add('Access-Control-Allow-Headers',
+                             'Content-Type,Authorization,true')
+        response.headers.add('Access-Control-Allow-Methods',
+                             'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+
+ @app.route('/headers')
+ #@requires_auth('get:drinks-detail')
+ def hello(jwt):
     print(jwt)
     return 'Hello, Sayed Hussein, the app is working'
 
 
-@app.route('/drinks', methods=['GET'])
-#@requires_auth('get:drinks')
-def get_drinks():
+ @app.route('/drinks', methods=['GET'])
+ def get_drinks():
     drinks_all = Drink.query.all()
     drinks = [drink.short() for drink in drinks_all]
     if len(drinks) == 0:
@@ -40,9 +53,9 @@ def get_drinks():
     })
 
 
-@app.route('/drinks-detail', methods=['GET'])
-@requires_auth('get:drinks-detail')
-def get_drinks_details(self):
+ @app.route('/drinks-detail', methods=['GET'])
+ @requires_auth('get:drinks-detail')
+ def get_drinks_details(self):
     drinks_all = Drink.query.all()
     print("it works here ")
     print(drinks_all)
@@ -57,13 +70,13 @@ def get_drinks_details(self):
 
 
 
-@app.route('/drinks', methods=['post'])
-@requires_auth('post:drinks')
-def create_new_drink(self):
+ @app.route('/drinks', methods=['post'])
+ @requires_auth('post:drinks')
+ def create_new_drink(self):
     body = request.get_json()
-    new_title= body.get('title', None)
-    new_recipe= body.get('recipe', None)
-    new_category_id= body.get('category_id', None)
+    new_title= body.get('title')
+    new_recipe= body.get('recipe')
+    new_category_id= body.get('category_id')
    
     
     new_drink = Drink(title=new_title ,category_id=new_category_id, recipe=json.dumps(new_recipe))
@@ -77,9 +90,9 @@ def create_new_drink(self):
       })
 
 
-@app.route('/drinks/<int:id>', methods=['PATCH'])
-@requires_auth('patch:drinks')
-def update_drink(jwt,id):
+ @app.route('/drinks/<int:id>', methods=['PATCH'])
+ @requires_auth('patch:drinks')
+ def update_drink(jwt,id):
     drink = Drink.query.filter(Drink.id == id).one_or_none()
     body = request.get_json()
     drink.title = body.get('title', drink.title)
@@ -95,9 +108,9 @@ def update_drink(jwt,id):
       })
 
 
-@app.route('/drinks/<int:id>', methods=['DELETE'])
-@requires_auth('delete:drinks')
-def delete_specific_drink(jwt,id) :
+ @app.route('/drinks/<int:id>', methods=['DELETE'])
+ @requires_auth('delete:drinks')
+ def delete_specific_drink(jwt,id) :
     selected_drink=Drink.query.get(id)
     selected_drink.delete()
     drinks = Drink.query.all()
@@ -112,11 +125,10 @@ def delete_specific_drink(jwt,id) :
         'deleted' : id 
       })
     
-#Endpoints for Category class
-#Get all categories
-@app.route('/categories', methods=['GET'])
-
-def get_categories():
+ #Endpoints for Category class
+ #Get all categories
+ @app.route('/categories', methods=['GET'])
+ def get_categories():
     categories_all = Category.query.all()
     categories = [category.long() for category in categories_all]
 
@@ -128,10 +140,10 @@ def get_categories():
       'categories' : categories
     })
 
-#Delete category
-@app.route('/categories/<int:category_id>', methods=['DELETE'])
-@requires_auth('delete: categories')
-def delete_category(jwt,category_id):
+ #Delete category
+ @app.route('/categories/<int:category_id>', methods=['DELETE'])
+ @requires_auth('delete: categories')
+ def delete_category(jwt,category_id):
     category = Category.query.filter(Category.id==category_id).one_or_none()
     
     if category is None:
@@ -144,9 +156,9 @@ def delete_category(jwt,category_id):
     })  
   
 #Post category
-@app.route('/categories', methods=['POST'])
-@requires_auth('post:categories')
-def add_category(self):
+ @app.route('/categories', methods=['POST'])
+ @requires_auth('post:categories')
+ def add_category(self):
   
     try:
       data = {
@@ -168,20 +180,20 @@ def add_category(self):
 
 
 
-## Error Handling
-'''
-Example error handling for unprocessable entity
-'''
-@app.errorhandler(422)
-def unprocessable(error):
+ ## Error Handling
+ '''
+  Example error handling for unprocessable entity
+  '''
+ @app.errorhandler(422)
+ def unprocessable(error):
     return jsonify({
                     "success": False, 
                     "error": 422,
                     "message": "unprocessable"
                     }), 422
 
-@app.errorhandler(404)
-def unprocessable(error):
+ @app.errorhandler(404)
+ def unprocessable(error):
     return jsonify({
                     "success": False, 
                     "error": 404,
@@ -189,15 +201,16 @@ def unprocessable(error):
                     }), 404
 
 
-@app.errorhandler(400)
-def unprocessable(error):
+ @app.errorhandler(400)
+ def unprocessable(error):
     return jsonify({
                     "success": False, 
                     "error": 400,
                     "message": "Permission is not included in the JWT"
                     }), 400
+ return app 
 
+app = create_app()
 
 if __name__ == '__main__':
-     app.run(host='0.0.0.0', port=8080, debug=True)
-
+    app.run(debug=True)
