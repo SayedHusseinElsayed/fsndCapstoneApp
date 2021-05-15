@@ -129,3 +129,52 @@ The `--reload` flag will detect file changes and restart the server automaticall
 4. `./src/models.py`
 
 
+
+### Endpoints
+
+GET '/categories'
+GET '/drinks'
+POST '/drinks'
+POST '/categories'
+delete '/drinks/1'
+PATCH '/drinks/1'
+
+-----------------------------------
+GET '/categories'
+- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+- Request Arguments: None
+- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs.
+
+{"categories":[{"id":2,"name":"soft drinks"},{"id":1,"name":"hot drinls"},{"id":3,"name":"mix"},{"id":6,"name":"test2"},{"id":7,"name":"test4"},{"id":8,"name":"test10"}],"success":true}
+-----------------------------------
+GET '/drinks'
+- Fetches all drinks related with category name from the database
+- Request Arguments: None
+- Returns: An object of drinks with related categories.
+{"drinks":[{"category_id":2,"id":8,"recipe":[{"color":"yellow","parts":1}],"title":"orange"},{"category_id":2,"id":13,"recipe":[{"color":"green","parts":1}],"title":"Fanta"},{"category_id":2,"id":11,"recipe":[{"color":"blue","parts":1}],"title":"Water5"},{"category_id":2,"id":19,"recipe":[{"color":"blue","parts":1}],"title":"Water4"}],"success":true}
+-----------------------------------
+
+POST '/drinks'
+
+- Create a new drink, which will require the recipe and title text, and category id.
+- Request Arguments: jwt
+- Returns: True success in case of successful adding and add this drink to the end of list page.
+
+-----------------------------------
+
+DELETE '/drinks/<int:drink_id>'
+
+- delete single drink based on drink_id.
+- Request Arguments: drink_id
+- Returns: a refresh of questions after deleting process.
+
+
+------------------------------------
+PATCH '/drinks/<int:drink_id>'
+
+- UPDATE single drink based on drink_id.
+- Request Arguments: drink_id
+
+
+
+
