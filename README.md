@@ -144,14 +144,89 @@ GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs.
-
-{"categories":[{"id":2,"name":"soft drinks"},{"id":1,"name":"hot drinls"},{"id":3,"name":"mix"},{"id":6,"name":"test2"},{"id":7,"name":"test4"},{"id":8,"name":"test10"}],"success":true}
+{
+    "categories": [
+        {
+            "id": 2,
+            "name": "soft drinks"
+        },
+        {
+            "id": 1,
+            "name": "hot drinls"
+        },
+        {
+            "id": 3,
+            "name": "mix"
+        },
+        {
+            "id": 6,
+            "name": "test2"
+        },
+        {
+            "id": 7,
+            "name": "test4"
+        },
+        {
+            "id": 8,
+            "name": "test10"
+        }
+    ],
+    "success": true
+}
 -----------------------------------
 GET '/drinks'
 - Fetches all drinks related with category name from the database
 - Request Arguments: None
 - Returns: An object of drinks with related categories.
-{"drinks":[{"category_id":2,"id":8,"recipe":[{"color":"yellow","parts":1}],"title":"orange"},{"category_id":2,"id":13,"recipe":[{"color":"green","parts":1}],"title":"Fanta"},{"category_id":2,"id":11,"recipe":[{"color":"blue","parts":1}],"title":"Water5"},{"category_id":2,"id":19,"recipe":[{"color":"blue","parts":1}],"title":"Water4"}],"success":true}
+{
+    "drinks": [
+        {
+            "category_id": 2,
+            "id": 8,
+            "recipe": [
+                {
+                    "color": "yellow",
+                    "parts": 1
+                }
+            ],
+            "title": "orange"
+        },
+        {
+            "category_id": 2,
+            "id": 13,
+            "recipe": [
+                {
+                    "color": "green",
+                    "parts": 1
+                }
+            ],
+            "title": "Fanta"
+        },
+        {
+            "category_id": 2,
+            "id": 11,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "parts": 1
+                }
+            ],
+            "title": "Water5"
+        },
+        {
+            "category_id": 2,
+            "id": 19,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "parts": 1
+                }
+            ],
+            "title": "Water4"
+        }
+    ],
+    "success": true
+}
 -----------------------------------
 
 POST '/drinks'
@@ -159,6 +234,71 @@ POST '/drinks'
 - Create a new drink, which will require the recipe and title text, and category id.
 - Request Arguments: jwt
 - Returns: True success in case of successful adding and add this drink to the end of list page.
+{
+    "drinks": [
+        {
+            "category_id": 2,
+            "id": 8,
+            "recipe": [
+                {
+                    "color": "yellow",
+                    "name": "orange",
+                    "parts": 1
+                }
+            ],
+            "title": "orange"
+        },
+        {
+            "category_id": 2,
+            "id": 13,
+            "recipe": [
+                {
+                    "color": "green",
+                    "name": "Fanta",
+                    "parts": 1
+                }
+            ],
+            "title": "Fanta"
+        },
+        {
+            "category_id": 2,
+            "id": 11,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "name": "Water5",
+                    "parts": 1
+                }
+            ],
+            "title": "Water5"
+        },
+        {
+            "category_id": 2,
+            "id": 19,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "name": "Water",
+                    "parts": 1
+                }
+            ],
+            "title": "Water4"
+        },
+        {
+            "category_id": 1,
+            "id": 20,
+            "recipe": [
+                {
+                    "color": "black",
+                    "name": "test",
+                    "parts": 2
+                }
+            ],
+            "title": "test_drink"
+        }
+    ],
+    "success": true
+}
 
 -----------------------------------
 
@@ -168,6 +308,10 @@ DELETE '/drinks/<int:drink_id>'
 - Request Arguments: drink_id
 - Returns: a refresh of questions after deleting process.
 
+{
+    "deleted": 20,
+    "success": true
+}
 
 ------------------------------------
 PATCH '/drinks/<int:drink_id>'
@@ -175,6 +319,70 @@ PATCH '/drinks/<int:drink_id>'
 - UPDATE single drink based on drink_id.
 - Request Arguments: drink_id
 
-
+{
+    "drinks": [
+        {
+            "category_id": 2,
+            "id": 8,
+            "recipe": [
+                {
+                    "color": "yellow",
+                    "name": "orange",
+                    "parts": 1
+                }
+            ],
+            "title": "orange"
+        },
+        {
+            "category_id": 2,
+            "id": 13,
+            "recipe": [
+                {
+                    "color": "green",
+                    "name": "Fanta",
+                    "parts": 1
+                }
+            ],
+            "title": "Fanta"
+        },
+        {
+            "category_id": 2,
+            "id": 11,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "name": "Water5",
+                    "parts": 1
+                }
+            ],
+            "title": "Water5"
+        },
+        {
+            "category_id": 2,
+            "id": 19,
+            "recipe": [
+                {
+                    "color": "blue",
+                    "name": "Water",
+                    "parts": 1
+                }
+            ],
+            "title": "Water4"
+        },
+        {
+            "category_id": 1,
+            "id": 20,
+            "recipe": [
+                {
+                    "color": "black",
+                    "name": "test",
+                    "parts": 2
+                }
+            ],
+            "title": "test_drink_updated"
+        }
+    ],
+    "modiefed_drink_id": 20,
+    "success": true
 
 
