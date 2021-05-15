@@ -7,9 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 
 
-database_name = "coffee_shop"
-database_path = "postgresql://{}:{}@{}/{}".format('postgres', 'postgres', 'localhost:5432', database_name)
-#database_path = "postgres://vruowiqqxcjikb:8436a1318322bd2916ef40192d48d6c7b13a509f6e8ffcce35b01c4bfbdc8f68@ec2-184-73-198-174.compute-1.amazonaws.com:5432/d5pjp6023975ed"
+database_name = "d5pjp6023975ed"
+#database_path = "postgresql://{}:{}@{}/{}".format('postgres', 'postgres', 'localhost:5432', database_name)
+database_path = "postgres://vruowiqqxcjikb:8436a1318322bd2916ef40192d48d6c7b13a509f6e8ffcce35b01c4bfbdc8f68@ec2-184-73-198-174.compute-1.amazonaws.com:5432/d5pjp6023975ed"
 
 
 db = SQLAlchemy()
@@ -29,7 +29,7 @@ def db_drop_and_create_all():
     drink = Drink(
         title='Nescafee',
         recipe='[{"name": "Nescafee", "color": "black", "parts": 2}]',
-        category_id=2
+      
     )
 
 
@@ -53,6 +53,7 @@ class Drink(db.Model):
             'id': self.id,
             'title': self.title,
             'recipe': short_recipe,
+      
             'category_id': self.category_id
         }
 
@@ -70,7 +71,6 @@ class Drink(db.Model):
     def insert(self):
         db.session.add(self)
         db.session.commit()
-
 
 
     def delete(self):
