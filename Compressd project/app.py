@@ -208,6 +208,52 @@ def create_app(test_config=None):
                     "error": 400,
                     "message": "Permission is not included in the JWT"
                     }), 400
+
+ @app.errorhandler(401)
+ def unauthorized (error):
+    return jsonify({
+                    "success": False, 
+                    "error": 401,
+                    "message": "unauthorized"
+                    }), 401
+
+ @app.errorhandler(405)
+ def invalid_method (error):
+    return jsonify({
+                    "success": False, 
+                    "error": 405,
+                    "message": "invalid_method"
+                    }), 405
+
+  
+ @app.errorhandler(403)
+ def forbidden (error):
+    return jsonify({
+                    "success": False, 
+                    "error": 403,
+                    "message": "forbidden"
+                    }), 403
+ 
+ @app.errorhandler(500)
+ def server_error (error):
+    return jsonify({
+                    "success": False, 
+                    "error": 500,
+                    "message": "server_error"
+                    }), 500
+              
+ @app.errorhandler(409)
+ def duplicate_resource (error):
+    return jsonify({
+                    "success": False, 
+                    "error": 409,
+                    "message": "duplicate_resource"
+                    }), 409
+
+
+
+
+
  return app 
 
 app = create_app()

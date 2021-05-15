@@ -193,7 +193,7 @@ def create_app(test_config=None):
                     }), 422
 
  @app.errorhandler(404)
- def unprocessable(error):
+ def resourcenotfound(error):
     return jsonify({
                     "success": False, 
                     "error": 404,
@@ -202,7 +202,7 @@ def create_app(test_config=None):
 
 
  @app.errorhandler(400)
- def unprocessable(error):
+ def permissionNotIncluded(error):
     return jsonify({
                     "success": False, 
                     "error": 400,
@@ -210,7 +210,7 @@ def create_app(test_config=None):
                     }), 400
 
  @app.errorhandler(401)
- def unauthorized (error):
+ def unauthorized(error):
     return jsonify({
                     "success": False, 
                     "error": 401,

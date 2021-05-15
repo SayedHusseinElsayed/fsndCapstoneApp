@@ -71,8 +71,26 @@ class CoffeeShopTestCase(unittest.TestCase):
         drink = Drink.query.filter(Drink.id == 2).one_or_none()
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
+
+#test_404_delete_drink_not_exist
+    def test_404_delete_drink_not_exist(self):
+        res = self.client().delete('/drinks/1000',headers=auth_header)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
+
+#test_401_delete_drink_unauth
+    def test_401_delete_drink_unauth(self):
+        res = self.client().delete('/drinks/2',headers=auth_header)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['code'], 'unauthorized')
    
-'''
+
 #Add new drink
     def test_post_drink(self):
         res = self.client().post('/drinks', headers=auth_header,
@@ -95,7 +113,8 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'bad request structure') 
 
 
-#Test unauthorized 
+
+#Test unauthorized creating drink
     def test_401_unauth_create_drink(self):
         res = self.client().post('/drinks',headers=auth_header,
         json={
@@ -123,17 +142,6 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
 
-  
-
-#Test delete drink not exist
-    def test_404_delete_drink_not_exist(self):
-        res = self.client().delete('/drinks/1000',headers=auth_header)
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'resource not found')
-
 
 
 #Test update drink not exist
@@ -152,7 +160,7 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
 
-'''
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

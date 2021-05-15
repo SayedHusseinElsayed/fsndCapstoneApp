@@ -13,18 +13,19 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 from os.path import join, dirname
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-'''
+
 AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 ALGORITHMS   = os.environ.get('ALGORITHMS')
 API_AUDIENCE = os.environ.get('API_AUDIENCE')
-'''
 
+'''
 AUTH0_DOMAIN="pos-coffee-shop.us.auth0.com"
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'coffeeshop'
 
+'''
 ## AuthError Exception method
 
 class AuthError(Exception):
@@ -150,3 +151,50 @@ def requires_auth(permission=''):
 
         return wrapper
     return requires_auth_decorator
+
+
+# some implmentation of errors:
+header_missing = AuthError({
+    'code': 'missing_authorization_header',
+    'description': 'an authorization header is expected to be send in request.'
+}, 401)
+
+barrer_not_found = AuthError({
+    'code': 'invalid_header',
+    'description': 'Authorization header must start with "Bearer".'
+}, 401)
+
+malformed_auth = AuthError({
+    'code': 'invalid_header',
+    'description': 'Authorization malformed.'
+}, 401)
+
+token_not_found = AuthError({
+    'code': 'invalid_header',
+    'description': 'Token not found.'
+}, 401)
+
+token_expired = AuthError({
+    'code': 'token_expired',
+    'description': 'Token expired.'
+}, 401)
+
+incorrect_clamis = AuthError({
+    'code': 'invalid_claims',
+    'description': 'Incorrect claims. check the audience and issuer.'
+}, 401)
+
+not_pars_auth = AuthError({
+    'code': 'invalid_header',
+    'description': 'Unable to parse authentication token.'
+}, 400)
+
+not_found_key = AuthError({
+    'code': 'invalid_header',
+    'description': 'Can not find the appropriate key.'
+}, 400)
+
+premission_not_found = AuthError({
+    'code': 'unauthorized',
+    'description': 'Permission Not found',
+}, 401)
