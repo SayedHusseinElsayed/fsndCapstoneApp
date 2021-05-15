@@ -10,12 +10,16 @@ from sqlalchemy import Column, String, Integer, create_engine, DateTime
 from app import create_app
 from models import *
 from auth import AuthError, requires_auth, verify_decode_jwt
+from dotenv import load_dotenv
 
 
-auth_header = {
+auth_manager_header = {
 
-'Authorization': "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InlNbE5IR3BabHdqalJyTHBERzhrbSJ9.eyJpc3MiOiJodHRwczovL3Bvcy1jb2ZmZWUtc2hvcC51cy5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDA1ODcwMDkwNzk0NjU3OTM3MjAiLCJhdWQiOiJjb2ZmZWVzaG9wIiwiaWF0IjoxNjIxMDM1MzcxLCJleHAiOjE2MjEwNDI1NzEsImF6cCI6IjQzOFlVNGpJODVpYk9aQnJjdmlSbGdhMzRxVFhWUDc2Iiwic2NvcGUiOiIiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6IGNhdGVnb3JpZXMiLCJkZWxldGU6ZHJpbmtzIiwiZ2V0OmNhdGVnb3JpZXMiLCJnZXQ6ZHJpbmtzIiwiZ2V0OmRyaW5rcy1kZXRhaWwiLCJwYXRjaDpkcmlua3MiLCJwb3N0OmNhdGVnb3JpZXMiLCJwb3N0OmRyaW5rcyJdfQ.j7wo6T5oSfnfuPITjQsGZgrSrt_s7Dqm-kkXmHTSj5t3sVGJBEMB2l3zgkhyT9WL-mJiTveDXPzjDcPfhZNUJmWHBhBjYzyXr-K-WuggjKd5faHscHsXI6BOmb6Jczw4uWxkYyvcYA4805F-hXOK6nRtjEOp6ywIs2c67tDC_DX5T-BARHJ8ynz9h14uAu3Xj4AkC4IHB5--PxJI3NenfIkBY0qwT2OoRkZkGweLOQl9lWQRV26TbaTowkUTPk4NKLpibMwYUDEy0ilGv1nu1epQadeAZ8emqZv_QdAm8qOL9yKIa6nhcslU5-L-ERkPgjyiNZ6ctS--QJx8dxeGcw"
+'Authorization': os.environ.get('MANAGER_TOKEN')
+}
+auth_barista_header = {
 
+ 'Authorization': os.environ.get('BARISTA_TOKEN')
 }
 
 class CoffeeShopTestCase(unittest.TestCase):
@@ -62,19 +66,29 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['categories'])
 
-
-#Delete drink
-    def test_delete_drink(self):
-        res = self.client().delete('/drinks/2', headers=auth_header)
+#Delete drink by Manager
+    def test_delete_drink_by_manager(self):
+        res = self.client().delete('/drinks/28', headers=auth_manager_header)
         data = json.loads(res.data)
 
-        drink = Drink.query.filter(Drink.id == 2).one_or_none()
+        drink = Drink.query.filter(Drink.id == 28).one_or_none()
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
 
+#Test Barista has no access to delete drinks
+    def test_delete_drink_by_barista(self):
+        res = self.client().delete('/drinks/28',headers=auth_barista_header)
+
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 500)
+        self.assertEqual(data['success'], False)
+        #self.assertEqual(data['message'], {'code': 'unauthorized', 'description':'Permission not found.'})
+
+
+
 #test_404_delete_drink_not_exist
     def test_404_delete_drink_not_exist(self):
-        res = self.client().delete('/drinks/1000',headers=auth_header)
+        res = self.client().delete('/drinks/1000',headers=auth_manager_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
@@ -83,7 +97,7 @@ class CoffeeShopTestCase(unittest.TestCase):
 
 #test_401_delete_drink_unauth
     def test_401_delete_drink_unauth(self):
-        res = self.client().delete('/drinks/2',headers=auth_header)
+        res = self.client().delete('/drinks/2',header=auth_manager_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 401)
@@ -91,9 +105,10 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(data['code'], 'unauthorized')
    
 
-#Add new drink
-    def test_post_drink(self):
-        res = self.client().post('/drinks', headers=auth_header,
+#Add new drink by Manager
+
+    def test_post_drink_by_manager(self):
+        res = self.client().post('/drinks', headers=auth_manager_header,
             json={
                 "title": "Strawberry",
                 "recipe": [{"color": "green", "name": "Strawberry", "parts": 2}],
@@ -103,10 +118,24 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
 
+#Test Barista has no access to adding drinks
+    def test_create_new_drink_by_barista(self):
+        res = self.client().post('/drinks',headers=auth_barista_header,
+        json={
+                "title": "Strawberry small",
+                "recipe": [{"color": "green", "name": "Strawberry", "parts": 2}],
+                "category_id": 1
+                })
+
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['message'], {'code': 'unauthorized', 'description':'Permission not found.'})
+
+
 
 #Test failing add drink
     def test_400_fail_create_drink(self):
-        res = self.client().post('/drinks',json={},headers=auth_header)
+        res = self.client().post('/drinks',json={},headers=auth_manager_header)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
@@ -116,7 +145,7 @@ class CoffeeShopTestCase(unittest.TestCase):
 
 #Test unauthorized creating drink
     def test_401_unauth_create_drink(self):
-        res = self.client().post('/drinks',headers=auth_header,
+        res = self.client().post('/drinks',headers=auth_manager_header,
         json={
                 "title": "Apple",
                 "recipe": [{"color": "green", "name": "apple", "parts": 2}],
@@ -129,9 +158,9 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 401)
         self.assertEqual(data['code'], 'unauthorized')   
 
-#Update current drink
-    def test_update_drink(self):
-        res = self.client().patch('/drinks/28',headers=auth_header,
+#Update current drink_by_manager
+    def test_update_drink_by_manager(self):
+        res = self.client().patch('/drinks/28',headers=auth_manager_header,
           json={
                 "title": "Water",
                 "recipe": [{"color": "white", "name": "water", "parts": 2}],
@@ -141,13 +170,25 @@ class CoffeeShopTestCase(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-
+    
+#Update current drink_by_Barista
+    def test_update_drink_by_barista(self):
+        res = self.client().patch('/drinks/28',headers=auth_barista_header,
+          json={
+                "title": "Water",
+                "recipe": [{"color": "white", "name": "water", "parts": 2}],
+                "category_id": 2
+                }
+        )
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertEqual(data['success'], True)
 
 
 #Test update drink not exist
 
     def test_404_update_drink_not_exist(self):
-        res = self.client().patch('/drinks/999',headers=auth_header,
+        res = self.client().patch('/drinks/999',headers=auth_manager_header,
           json={
                 "title": "Water",
                 "recipe": [{"color": "white", "name": "water", "parts": 2}],
@@ -159,7 +200,6 @@ class CoffeeShopTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
-
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
